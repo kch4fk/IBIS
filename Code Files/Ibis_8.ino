@@ -5,7 +5,7 @@ Ibis Robotic Camera Arm
 Research project to augment an exisiting Raven II Surgical Robot in the Link
 Lab at UVA.
 
-10/16 - Adding serial read processing to control the arm instead of with the foot pedal box.
+10/18 - Adding serial read processing to control the arm instead of with the foot pedal box.
 */
 
 // Libraries
@@ -99,6 +99,8 @@ double xCamVec = 0.00;          // inches
 double yCamVec = 0.00;          // inches
 
 double tBaseServoRad = 1.57;    // radians
+
+char command;                   // command from serial
 //----------------------------------
 
 double scalingFactor = 1.00;    // arm movement scaling factor
@@ -199,6 +201,7 @@ void loop() {
 
 //-------------------------------------
 
+/*
 // Read the pedals
   xInPedalState = digitalRead(xInPedal);
   xOutPedalState = digitalRead(xOutPedal);
@@ -208,8 +211,6 @@ void loop() {
 
   panLeftPedalState = digitalRead(panLeftPedal);
   panRightPedalState = digitalRead(panRightPedal);  
-
-
 // 
 
 
@@ -249,6 +250,13 @@ void loop() {
     panRight();
   }
 
+*/
+
+
+// Instead of reading the pedals, accept commands from serial
+  recvCommand();
+
+
 /*
   Serial.println("Starting Pos");
   Serial.println(zoom);
@@ -263,10 +271,49 @@ void loop() {
   */
 
   //cameraPosition(zoom, 0.00, 0.00);
-  delay(10);
+  delay(1000);
   Serial.println();
    
 }
+
+
+void recvCommand() {
+  if(Serial.available() > 0) {
+    command = Serial.read();
+    react(command);
+  }
+}
+
+
+void react(char command){
+  switch(command) {
+    case 'I':
+      Serial.println("xIn");
+      xIn();
+      break;
+    case 'O':
+      Serial.println("xOut");
+      xOut();
+      break;
+    case 'U':
+      Serial.println("yUp");
+      yUp();
+      break;
+    case 'D':
+      Serial.println("yDown");
+      yDown();
+      break;
+    case 'L':
+      Serial.println("zLeft");
+      panLeft();
+      break;
+    case 'R':
+      Serial.println("zRight");
+      panRight();
+      break;
+  }
+}
+
 
 
 void xIn(){
@@ -523,4 +570,3 @@ double zoomPosCalc(double zoom){
   double zoomPos = 45.02 + 18.1818*zoom;
   return zoomPos;
 }
-
