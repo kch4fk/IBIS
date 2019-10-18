@@ -271,7 +271,7 @@ void loop() {
   */
 
   //cameraPosition(zoom, 0.00, 0.00);
-  delay(1000);
+  delay(10);
   Serial.println();
    
 }
